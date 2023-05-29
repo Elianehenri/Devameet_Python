@@ -1,11 +1,11 @@
 from fastapi import FastAPI
-from src.core.config import get_settings
+from src.core.router import router
 
+def build_api() -> FastAPI:
+    application = FastAPI()
+    
+    application.include_router(router, prefix='/api')
+    
+    return application
 
-app = FastAPI()
-
-
-@app.get("/")
-def read_root():
-    settings = get_settings()
-    return {"Hello": "World", 'log_level': settings.log_level}
+app = build_api()
