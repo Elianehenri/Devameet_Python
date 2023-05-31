@@ -6,8 +6,8 @@ class Settings(BaseSettings):
     log_level: str = 'info'
     db_url: str
     jwt_secret: str
-    jwt_algorithm: str
-    jwt_expirations: int
+    jwt_algorithm: str = 'HS256'
+    jwt_expirations: int = 3600
 
     class Config:
         env_file = '.env'
