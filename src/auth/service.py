@@ -9,8 +9,6 @@ from .handler import TokenHandler
 from .model import User
 from .schema import Login, Register, Token
 
-
-
 class AuthService:
     def __init__(self, db: Session = Depends(get_db)):
         self.db = db

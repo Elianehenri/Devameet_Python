@@ -1,6 +1,5 @@
 from fastapi import APIRouter, Depends
 
-
 from .service import AuthService
 from .schema import Login,Register
 
