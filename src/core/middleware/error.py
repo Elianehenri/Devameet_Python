@@ -17,12 +17,14 @@ class ApiError(Exception):
     def __str__(self):
         return self.message
 
+
 class ErrorConverterMiddleware(BaseHTTPMiddleware):
     def __init__(self, app):
         super().__init__(app)
         self.app = app
 
-async def dispatch(self, request: Request, call_next: RequestResponseEndpoint):
+
+   async def dispatch(self, request: Request, call_next: RequestResponseEndpoint):
         try:
             response = await call_next(request)
         except Exception as e:
@@ -45,6 +47,8 @@ async def dispatch(self, request: Request, call_next: RequestResponseEndpoint):
             raise ApiError(message=message, error=error_dict[status_code], status_code=status_code)
         return response
 
+
+
 class ErrorHandlerMiddleware(BaseHTTPMiddleware):
     def __init__(self, app):
         super().__init__(app)
@@ -59,8 +63,8 @@ class ErrorHandlerMiddleware(BaseHTTPMiddleware):
                 content={
                     "message": e.message.split(";"),
                     "error": e.error,
-                    "statusCode": e.status_code
-                }
+                    "statusCode": e.status_code,
+                },
             )
         return response
 
@@ -68,13 +72,15 @@ class ErrorHandlerMiddleware(BaseHTTPMiddleware):
 def handle_http_exception(request: Request, exc: HTTPException):
     raise ApiError(message=exc.detail, error=exc.detail, status_code=exc.status_code)
 
+
 def handle_validation_error(request: Request, exc: RequestValidationError):
-    errors = ';'.join(get_error_message(err) for err in exc.errors())
+    errors = ";".join(get_error_message(err) for err in exc.errors())
     raise ApiError(message=errors, error="Unprocessable Entity", status_code=422)
 
+
 def get_error_message(error):
-        if error['type'] == 'value_error.missing':
-            return f"Missing value for {error['loc'][-1]}"
-        else:
-            header = error['loc'][-1].capitalize()
-            return f"{header}: {error['msg']}"
+    if error["type"] == "value_error.missing":
+        return f"Missing value for {error['loc'][-1]}"
+    else:
+        header = error["loc"][-1].capitalize()
+        return f"{header}: {error['msg']}"
