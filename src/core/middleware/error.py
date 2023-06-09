@@ -23,8 +23,7 @@ class ErrorConverterMiddleware(BaseHTTPMiddleware):
         super().__init__(app)
         self.app = app
 
-
-   async def dispatch(self, request: Request, call_next: RequestResponseEndpoint):
+    async def dispatch(self, request: Request, call_next: RequestResponseEndpoint):
         try:
             response = await call_next(request)
         except Exception as e:
@@ -46,7 +45,6 @@ class ErrorConverterMiddleware(BaseHTTPMiddleware):
 
             raise ApiError(message=message, error=error_dict[status_code], status_code=status_code)
         return response
-
 
 
 class ErrorHandlerMiddleware(BaseHTTPMiddleware):

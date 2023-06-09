@@ -4,6 +4,7 @@ from src.core.database import SessionLocal, get_db
 from .model import Meet, ObjectMeet
 from .schema import CreateMeet, UpdateMeet
 
+
 class MeetService:
     def __init__(self, db: SessionLocal = Depends(get_db)):
         self.db = db

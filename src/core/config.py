@@ -7,12 +7,13 @@ class Settings(BaseSettings):
     db_url: str
     jwt_secret: str
     jwt_algorithm: str = 'HS256'
-    jwt_expirations: int = 3600
+    jwt_expiration: int = 9600
 
     class Config:
         env_file = '.env'
-    
-@lru_cache( )
-def get_settings( ):
-    
-    return Settings( )
+
+
+@lru_cache()
+def get_settings():
+
+    return Settings()

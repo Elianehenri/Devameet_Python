@@ -7,6 +7,7 @@ from .core.middleware.error import ErrorConverterMiddleware, ErrorHandlerMiddlew
 from .core.middleware.database_session_middleware import DatabaseSessionMiddleware
 from .core.router import router
 
+
 def build_api() -> FastAPI:
     application = FastAPI()
 
@@ -24,5 +25,6 @@ def build_api() -> FastAPI:
     WebSocketServer(application, origins)
 
     return application
+
 
 app = build_api()
