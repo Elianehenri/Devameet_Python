@@ -4,6 +4,7 @@ from sqlalchemy import Column, ForeignKey, Integer, String
 from sqlalchemy.orm import relationship
 from src.core.database import Base
 
+
 class Meet(Base):
     __tablename__ = 'meets'
 
@@ -20,6 +21,7 @@ class Meet(Base):
         if not self.link:
             meet_link_generator = MeetLinkGenerator()
             self.link = meet_link_generator.generate()
+            
 
 class ObjectMeet(Base):
     __tablename__ = 'object_meet'
@@ -33,6 +35,8 @@ class ObjectMeet(Base):
     meet_id = Column(Integer, ForeignKey(Meet.id), nullable=False)
 
     meet = relationship(Meet, back_populates="object_meets")
+    
+    
 class MeetLinkGenerator:
     def __init__(self):
         self.characters = string.ascii_lowercase + string.digits

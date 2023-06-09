@@ -14,6 +14,7 @@ class WebSocketObject:
         self.link = link
         self.user_id = user_id
 #implemntar o servidor de websockt
+
 class WebSocketServer:
     def __init__(self, app: FastAPI, origins: list | str = '*'):
         logger.info("Socket server initialized")
@@ -22,6 +23,7 @@ class WebSocketServer:
         self.active_sockets: list[WebSocketObject] = []
         self.run()
 #colocar todos os metodos que a gente quer fazer o baind,quando esse evento execute esse metodo
+
     def run(self):
         self.socket_manager.on('disconnect', self.on_disconnect)
         self.socket_manager.on('join', self.on_join)
@@ -51,8 +53,8 @@ class WebSocketServer:
         logger.debug("Emitting remove user")
         await self.socket_manager.emit(f'{user_socket.link}-remove-user', {'socketId': user_socket.sid}, skip_sid=sid)
 
-#metodo quando alguem acessa a sala
-#todo mundo recebe evento que a lista foi atualizada, linha 77 e 78
+    #metodo quando alguem acessa a sala,todo mundo recebe evento que a lista foi atualizada, linha 77 e 78
+
     async def on_join(self, sid, data):
         logger.info("JOIN:Method called")
         link, user_id = data['link'], data['userId']
@@ -79,7 +81,7 @@ class WebSocketServer:
         else:
             user = existing_socket[0]
             logger.debug(f"JOIN:User already in room: socket={user}")
-#quando o usuario se mover na sala
+    #quando o usuario se mover na sala
     async def on_move(self, sid, *args, **kwargs):
         link, user_id, x, y, orientation =  args[0]['link'],  args[0]['userId'], args[0]['x'], args[0]['y'], args[0]['orientation']
 
@@ -93,7 +95,7 @@ class WebSocketServer:
         await self.socket_manager.emit(f'{link}-update-user-list', {'users': [user.to_json() for user in users]})
 
         logger.info("Moved")
-#metodo quando o usuario mutar os desmutar
+    #metodo quando o usuario mutar os desmutar
     async def on_toggl_mute_user(self, sid, *args, **kwargs):
         logger.info("Toggl mute user")
         link, user_id, muted = args[0]['link'], args[0]['userId'], args[0]['muted']
@@ -111,7 +113,7 @@ class WebSocketServer:
 
         await self.socket_manager.emit(f'{link}-update-user-list', {'users': [user.to_json() for user in users]})
 
-#metodo para fazer a chamada
+    #metodo para fazer a chamada
     async def on_call_user(self, sid, *args, **kwargs):
         logger.info("Call user")
         offer, to = args[0]['offer'], args[0]['to']
@@ -122,7 +124,7 @@ class WebSocketServer:
 
         logger.debug("Socket callUser: " + sid + " to " + to)
         await self.socket_manager.emit('call-made', call_made_dto, to=to)
-#metodo para encerrar a chamada
+    #metodo para encerrar a chamada
     async def on_make_answer(self, sid, *args, **kwargs):
         logger.info("Make answer")
         answer, to = args[0]['answer'], args[0]['to']

@@ -2,7 +2,8 @@ from starlette.middleware.base import BaseHTTPMiddleware, RequestResponseEndpoin
 
 from fastapi import Request, Response
 
-from src.core.database import  SessionLocal
+from ..database import  SessionLocal
+
 
 class DatabaseSessionMiddleware(BaseHTTPMiddleware):
     def __init__(self, app):

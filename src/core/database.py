@@ -5,12 +5,13 @@ from starlette.requests import Request
 
 from src.core.config import get_settings
 
-config =  get_settings()
+config = get_settings()
 
 engine = create_engine(config.db_url)
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
 Base = declarative_base()
+
 
 def get_db(request: Request):
     return request.state.db
