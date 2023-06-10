@@ -3,10 +3,11 @@ from fastapi_socketio import SocketManager
 from src.core.logger import ApiLogger
 
 from src.core.database import SessionLocal
-from .schema import UpdatePosition, ToggleMute
+from .schema import UpdatePosition, ToggleMute, CreateDirectionPosition
 from .service import RoomService
 
 logger = ApiLogger(__name__)
+
 
 class WebSocketObject:
     def __init__(self, sid: str, link: str, user_id: str):
@@ -14,6 +15,7 @@ class WebSocketObject:
         self.link = link
         self.user_id = user_id
 #implemntar o servidor de websockt
+
 
 class WebSocketServer:
     def __init__(self, app: FastAPI, origins: list | str = '*'):
@@ -69,11 +71,13 @@ class WebSocketServer:
             logger.debug("JOIN:Inserting user in room")
             self.active_sockets.append(WebSocketObject(sid, link, user_id))
 
-            dto = UpdatePosition(x=2, y=2, orientation='bottom')
-
+            #dto = UpdatePosition(x=2, y=2, orientation='bottom')
+            dto = CreateDirectionPosition(x=2, y=2, orientation='front')
+            
             with SessionLocal() as db_connection:
                 service = RoomService(db_connection)
-                service.update_user_position(user_id=user_id, link=link, client_id=sid, dto=dto)
+                #service.update_user_position(user_id=user_id, link=link, client_id=sid, dto=dto)
+                service.create_direction_position(user_id=user_id, link=link, client_id=sid, dto=dto)
                 users = service.list_users_position(link)
 
             await self.socket_manager.emit(f'{link}-update-user-list', {'users': [user.to_json() for user in users]})
@@ -82,6 +86,7 @@ class WebSocketServer:
             user = existing_socket[0]
             logger.debug(f"JOIN:User already in room: socket={user}")
     #quando o usuario se mover na sala
+    
     async def on_move(self, sid, *args, **kwargs):
         link, user_id, x, y, orientation =  args[0]['link'],  args[0]['userId'], args[0]['x'], args[0]['y'], args[0]['orientation']
 
@@ -95,15 +100,20 @@ class WebSocketServer:
         await self.socket_manager.emit(f'{link}-update-user-list', {'users': [user.to_json() for user in users]})
 
         logger.info("Moved")
-    #metodo quando o usuario mutar os desmutar
-    async def on_toggl_mute_user(self, sid, *args, **kwargs):
+    #metodo quando o usuario mutar ou desmutar
+    
+    async def on_toggl_mute_user(self, sid, data):
         logger.info("Toggl mute user")
-        link, user_id, muted = args[0]['link'], args[0]['userId'], args[0]['muted']
+        link = data['link']
+        user_id = data['userId']
+        muted = data['muted']
+        user_mute =data['userMute']
 
         dto = ToggleMute(
             user_id=user_id,
             muted=muted,
-            link=link
+            link=link,
+            user_mute=user_mute
         )
 
         with SessionLocal() as db_connection:
